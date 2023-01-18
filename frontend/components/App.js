@@ -5,7 +5,8 @@ import LoginForm from './LoginForm'
 import Message from './Message'
 import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
-import axios from 'axios';
+import PrivateRoute from './PrivateRoute'
+import axiosWithAuth from '../axios'
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
@@ -28,6 +29,9 @@ export default function App() {
     // and a message saying "Goodbye!" should be set in its proper state.
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
+    localStorage.removeItem('token');
+    setMessage('Goodbye!');
+    redirectToLogin();
   }
 
   const login = (loginData) => {
@@ -39,16 +43,15 @@ export default function App() {
     // to the Articles screen. Don't forget to turn off the spinner!
     setMessage('');
     setSpinnerOn(true);
-    axios.post(`http://localhost:9000/api/login`, loginData)
+    axiosWithAuth().post(`/login`, loginData)
       .then(res => {
-        console.log(res);
         localStorage.setItem('token', res.data.token);
         setMessage(res.data.message);
-        navigate('/articles');
+        redirectToArticles();
         setSpinnerOn(false);
       })
       .catch(err => {
-        console.error(err)
+        redirectToLogin();
       })
   }
 
@@ -61,6 +64,18 @@ export default function App() {
     // If something goes wrong, check the status of the response:
     // if it's a 401 the token might have gone bad, and we should redirect to login.
     // Don't forget to turn off the spinner!
+    setMessage('');
+    setSpinnerOn(true);
+    axiosWithAuth().get('/articles')
+      .then(res => {
+        setArticles(res.data.articles)
+        setMessage(res.data.message)
+        setSpinnerOn(false);
+      })
+      .catch(err => {
+        redirectToLogin();
+        setSpinnerOn(false)
+      })
   }
 
   const postArticle = article => {
@@ -93,11 +108,11 @@ export default function App() {
         </nav>
         <Routes>
           <Route path="/" element={<LoginForm login={login}/>} />
-          <Route path="articles" element={
-            <>
+          <Route path="/articles" element={
+            <PrivateRoute>
               <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId}/>
               <Articles articles={articles} getArticles={getArticles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId}/>
-            </>
+            </PrivateRoute>
           } />
         </Routes>
         <footer>Bloom Institute of Technology 2022</footer>
