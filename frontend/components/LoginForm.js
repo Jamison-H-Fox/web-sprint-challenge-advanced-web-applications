@@ -46,6 +46,7 @@ export default function LoginForm(props) {
         id="username"
       />
       <input
+        type='password'
         maxLength={20}
         value={values.password}
         onChange={onChange}
