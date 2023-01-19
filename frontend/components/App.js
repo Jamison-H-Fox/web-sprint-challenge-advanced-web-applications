@@ -97,13 +97,47 @@ export default function App() {
       })
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = (article_id, article) => {
     // ✨ implement
     // You got this!
+    setMessage('');
+    setSpinnerOn(true);
+    axiosWithAuth().put(`/articles/${article_id}`, article)
+      .then(res => {
+        axiosWithAuth().get('/articles')
+          .then(res => {
+            setArticles(res.data.articles);            
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        setMessage(res.data.message);
+        setSpinnerOn(false)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   const deleteArticle = article_id => {
     // ✨ implement
+    setMessage('');
+    setSpinnerOn(true);
+    axiosWithAuth().delete(`/articles/${article_id}`)
+      .then(res => {
+        axiosWithAuth().get('/articles')
+          .then(res => {
+            setArticles(res.data.articles);            
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        setMessage(res.data.message);
+        setSpinnerOn(false)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   return (
