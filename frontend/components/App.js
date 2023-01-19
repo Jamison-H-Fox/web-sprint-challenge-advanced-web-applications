@@ -31,6 +31,7 @@ export default function App() {
     // using the helper above.
     localStorage.removeItem('token');
     setMessage('Goodbye!');
+    setArticles([]);
     redirectToLogin();
   }
 
@@ -110,7 +111,7 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="/articles" element={
             <PrivateRoute>
-              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId}/>
+              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId} currentArticleId={currentArticleId} articles={articles}/>
               <Articles articles={articles} getArticles={getArticles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId}/>
             </PrivateRoute>
           } />
